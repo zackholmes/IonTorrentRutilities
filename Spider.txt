@@ -1,0 +1,34 @@
+# Load library
+library(spider)
+
+# Load aligned fasta file
+setwd("C:/Users/ymg2/R/fopA")
+mydata <- read.dna("fopA_alignment.fasta", format = "fasta")
+
+# Check alignment length
+collLength <- sapply(mydata, length)
+table(collLength)
+
+# Get column names
+mydata_names <- dimnames(mydata)[[1]]
+mydata_names 
+myspp <- strsplit(dimnames(mydata)[[1]], split="_")
+mysppvec <- sapply(myspp, function(x) paste(x[1], x[2], sep="_"))
+mysppvec
+
+# Also need genus vector
+mygenvec <- sapply(myspp, function(x) paste(x[1]))
+mygenvec
+
+# Then do species stats
+dataStat(mysppvec, mygenvec)
+
+# Sequence statistics
+seqStat(mydata)
+
+# The actual analysis
+analyze_mydata <- slideAnalyses(mydata, mydata_names, width = 250, interval = "codons", distMeasures = TRUE, treeMeasures = TRUE)
+str(analyze_mydata)
+plot(analyze_mydata)
+output <- rankSlidWin(analyze_mydata)
+write.table(output, file = "fopA_output.txt", sep = "\t")
